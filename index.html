@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convertidor de Informe Meteorológico</title>
+
+<!-- Librerías -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+  /* === Fondo general === */
+  body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #001f3f, #013a63, #014f86);
+    color: #000000;
+    margin: 0;
+    padding: 20px;
+  }
+
+  /* === Encabezado === */
+  h1 {
+    text-align: center;
+    color: #ffffff;
+    font-size: 26px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    text-shadow: 0 0 8px rgba(0,0,0,0.3);
+  }
+
+  /* === Área de texto === */
+  textarea {
+    width: 100%;
+    height: 300px;
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    border: 2px solid #014f86;
+    border-radius: 10px;
+    resize: none;
+    background-color: #ffffff;   /* fondo blanco */
+    color: #000000;              /* texto negro */
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+  }
+
+  /* === Configuración === */
+  .config {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #ffffff;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #014f86;
+    border-radius: 8px;
+    background-color: #022b42;
+    color: #e8f1fa;
+  }
+
+  /* === Botones === */
+  button {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background-color: #00b4d8;
+    color: #001f3f;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  }
+
+  button:hover {
+    background-color: #90e0ef;
+    transform: translateY(-2px);
+  }
+
+  /* === Vista previa (PDF) === */
+  #vistaPrevia {
+    width: 210mm;
+    min-height: 297mm;
+    background: #ffffff; /* fondo blanco del PDF */
+    color: #000000;      /* texto negro */
+    margin: 30px auto;
+    padding: 25mm;
+    font-size: 12pt;
+    line-height: 1.35;
+    border-radius: 0;   /* sin bordes redondeados */
+    border: none;       /* sin borde */
+    box-shadow: none;   /* sin sombra */
+    text-align: justify;
+  }
+
+  /* === Estilos del texto === */
+  .encabezado-principal {
+    font-family: Arial, sans-serif;
+    font-size: 18pt;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    color: #000000;
+    margin-bottom: 8px;
+  }
+
+  .parrafo-libre {
+    text-align: center;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    line-height: 1.1;
+    color: #000000;
+  }
+
+  .negrita { font-weight: bold; color: #000000; }
+
+  .bloque-temp {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: 1.1;
+    color: #000000;
+    text-align: justify;
+  }
+
+  /* === Cuadro editable === */
+  .bloque-editable-bajo {
+    font-weight: bold;
+    text-align: left;
+    margin-top: 25px;
+    margin-bottom: -35px;
+    outline: 1px dashed #999;
+    padding: 6px;
+    background-color: #ffffff;  /* fondo blanco */
+    color: #000000;              /* texto negro */
+    text-transform: none;
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+
+  .bloque-editable-bajo:focus {
+    outline: 2px solid #00b4d8;
+    background-color: #f1f1f1;
+  }
+
+  /* === Días === */
+  .dia-semana {
+    display: block;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 14pt;
+    margin-top: 22px;
+    margin-bottom: 6px;
+    color: #000000;
+    line-height: 1.1;
+  }
+
+  /* === Secciones === */
+  .bloque-seccion {
+    margin-top: 6px;
+    margin-bottom: 12px;
+    line-height: 1.25;
+    text-align: justify;
+    color: #000000;
+  }
+
+  .titulo-seccion {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 3px;
+    font-size: 13pt;
+    color: #000000;
+  }
+</style>
+</head>
+
+<body>
+  <h1>Convertidor de Informe Meteorológico a PDF</h1>
+
+  <textarea id="textoInforme" placeholder="Pega aquí tu informe meteorológico en mayúsculas..."></textarea>
+
+  <div class="config">
+    <label>Palabras que deben mantenerse SIEMPRE en mayúsculas (separadas por comas):</label>
+    <input type="text" id="palabrasMayus" value="MET008FF, MET106MD, N, S, E, W, NE, SE, NW, SW, N/NW, N/NE, S/SE, S/SW, E/SE, W/SW, PM, AM">
+  </div>
+
+  <button onclick="generarVista()">🔍 Ver vista previa</button>
+  <button onclick="generarPDF()">📄 Generar PDF</button>
+
+  <div id="vistaPrevia"></div>
+
+<script>
+  function corregirDireccionesViento(texto) {
+    const direcciones = {
+      'SURWESTE': 'Surweste', 'SURESTE': 'Sureste', 'NORWESTE': 'Norweste',
+      'NORESTE': 'Noreste', 'NORTE': 'Norte', 'SUR': 'Sur',
+      'WESTE': 'Weste', 'ESTE': 'Este'
+    };
+    for (const [clave, valor] of Object.entries(direcciones)) {
+      const regex = new RegExp(`\\b${clave}\\b`, 'gi');
+      texto = texto.replace(regex, valor);
+    }
+    return texto;
+  }
+
+  function reemplazarAbreviaturas(texto) {
+    texto = texto.replace(/\bVIS\b/gi, 'visibilidad');
+    texto = texto.replace(/\bVTO\b/gi, 'viento');
+    texto = texto.replace(/\bCALMA\b/gi, 'Calma');
+    return texto;
+  }
+
+  function capitalizarTexto(str) {
+    return str.toLowerCase().replace(/(^|[\s])([a-záéíóúñ])/g, (m, sep, letra) => sep + letra.toUpperCase());
+  }
+
+  function formatearTexto(texto, listaMayus) {
+    const lineasEspeciales = texto.match(/.*(TEMPERATURA\s+MINIMA\s+PROBABLE|TEMPERATURA\s+MAXIMA\s+PROBABLE|INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA|MET\d+).*/gim) || [];
+
+    texto = texto.toLowerCase();
+    texto = texto.replace(/(^|[.!?\n]\s*)([a-záéíóúñ])/g, (m, sep, letra) => sep + letra.toUpperCase());
+
+    lineasEspeciales.forEach(linea => {
+      const original = linea.toUpperCase();
+      texto = texto.replace(new RegExp(linea.trim().toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"), original);
+    });
+
+    texto = corregirDireccionesViento(texto);
+    texto = reemplazarAbreviaturas(texto);
+
+    listaMayus.forEach(palabra => {
+      const palabraTrim = palabra.trim();
+      const regex = new RegExp("\\b" + palabraTrim + "\\b", "gi");
+
+      if (palabraTrim.toUpperCase().startsWith("MET")) {
+        texto = texto.replace(regex, `<span class="negrita">${palabraTrim.toUpperCase()}</span>`);
+      } else {
+        texto = texto.replace(regex, palabraTrim.toUpperCase());
+      }
+    });
+
+    const frasesNegrita = ["MAL TIEMPO", "TEMPORAL"];
+    frasesNegrita.forEach(frase => {
+      const regex = new RegExp(`\\(?\\b${frase}\\b\\)?`, "gi");
+      texto = texto.replace(regex, match => `<span class="negrita">${match.toUpperCase()}</span>`);
+    });
+
+    return texto;
+  }
+
+  function aplicarFormatoHTML(texto) {
+    let html = texto;
+
+    html = html.replace(
+      /\b(Lunes|Martes|Miércoles|Miercoles|Jueves|Viernes|Sábado|Sabado|Domingo)\s+\d{1,2}(\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre))?\.?/gi,
+      match => {
+        const formateado = capitalizarTexto(match.replace(/\./g, "").trim());
+        return `<div class="dia-semana"><b><u>${formateado}</u></b></div>`;
+      }
+    );
+
+    html = html.replace(
+      /(TEMPERATURA\s+MINIMA\s+PROBABLE\s*:[^\n.]*\.\s*)(TEMPERATURA\s+MAXIMA\s+PROBABLE\s*:[^\n.]*\.\s*)(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA\s*:[^\n]*)?/gi,
+      (match, tmin, tmax, indice) => {
+        let bloque = `<div class="bloque-temp">${tmin.trim()}<br>${tmax.trim()}`;
+        if (indice)
+          bloque += `<br>${indice.trim()}<div class="bloque-editable-bajo" contenteditable="true">(pega aquí tu texto en negrita)</div>`;
+        return bloque + "</div>";
+      }
+    );
+
+    html = html.replace(/\bSITUACION SINOPTICA:?[\s\n]*/gi, '<div class="bloque-seccion"><span class="titulo-seccion">Situación Sinóptica:</span>');
+    html = html.replace(/\bPRONOSTICO VALIDO DESDE:?[\s\n]*/gi, '</div><div class="bloque-seccion"><span class="titulo-seccion">Pronóstico válido desde:</span><div class="bloque-editable-bajo" contenteditable="true">(pega aquí tu texto en negrita)</div>');
+    html = html.replace(/\bPRONOSTICO:?[\s\n]*/gi, '</div><div class="bloque-seccion"><span class="titulo-seccion">Pronóstico:</span>');
+
+    html += '</div>';
+    html = html.replace(/\n{2,}/g, '\n');
+    html = html.replace(/\n/g, '<br>');
+    return html;
+  }
+
+  function generarVista() {
+    let texto = document.getElementById("textoInforme").value.trim();
+    const listaMayus = document.getElementById("palabrasMayus").value.split(",");
+
+    if (!texto) {
+      alert("Por favor, pega el texto del informe meteorológico.");
+      return;
+    }
+
+    const lineas = texto.split("\n");
+    const primerasDos = lineas.slice(0, 2).map(l => `<div class="encabezado-principal">${l}</div>`).join("");
+    const libres = lineas.slice(2, 5).map(l => `<div class="parrafo-libre">${l}</div>`).join("");
+    const resto = lineas.slice(5).join("\n");
+
+    const textoProcesado = formatearTexto(resto, listaMayus);
+    const htmlFormateado = aplicarFormatoHTML(textoProcesado);
+
+    document.getElementById("vistaPrevia").innerHTML = `${primerasDos}${libres}<br>${htmlFormateado}`;
+  }
+
+  async function generarPDF() {
+    const { jsPDF } = window.jspdf;
+    const vista = document.getElementById("vistaPrevia");
+    const canvas = await html2canvas(vista, { scale: 2, backgroundColor: "#ffffff" });
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "letter");
+    const pageWidth = 216;
+    const imgWidth = 210;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", (pageWidth - imgWidth) / 2, 10, imgWidth, imgHeight);
+    pdf.save("Informe_Meteorologico.pdf");
+  }
+</script>
+</body>
+</html>
