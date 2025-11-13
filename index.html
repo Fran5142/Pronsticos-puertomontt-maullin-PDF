@@ -171,7 +171,7 @@ footer span { font-weight: bold; color: #90e0ef; font-size: 16px; }
 <!-- Configuración oculta -->
 <div class="config oculta">
   <label>Palabras que deben mantenerse SIEMPRE en mayúsculas (separadas por comas):</label>
-  <input type="text" id="palabrasMayus" value="MET008FF, MET106MD, N, S, E, W, NE, SE, NW, SW, N/NW, N/NE, S/SE, S/SW, E/SE, W/SW, PM, AM">
+  <input type="text" id="palabrasMayus" value="MET008FF, MET106MD, N, S, E, W, NE, SE, NW, SW, N/NW, N/NE, S/SE, S/SW, E/SE, W/SW, NW/W, PM, AM">
 </div>
 
 <div class="config" style="text-align:center; margin-bottom:20px;">
@@ -207,6 +207,7 @@ function reemplazarAbreviaturas(texto){
   texto = texto.replace(/\bPM\b/gi,'PM');
   texto = texto.replace(/\bAM\b/gi,'AM');
 
+
   texto=texto.replace(/\bCENTRO\b/gi,'Centro');
   texto=texto.replace(/\bMETEOROLOGICO\b/gi,'Meteorológico');
   texto=texto.replace(/\bMARITIMO\b/gi,'Marítimo');
@@ -215,15 +216,36 @@ function reemplazarAbreviaturas(texto){
   return texto;
 }
 
-function corregirDireccionesViento(texto){
-  const direcciones = {
-    'NORTE':'Norte','SUR':'Sur','ESTE':'Este','WESTE':'Weste',
-    'NORESTE':'Noreste','NOROESTE':'Noroeste','SURESTE':'Sureste','SURWESTE':'Surweste',
-    'NE':'NE','NW':'NW','SE':'SE','SW':'SW','N/NW':'N/NW','N/NE':'N/NE','S/SE':'S/SE','S/SW':'S/SW','E/SE':'E/SE','W/SW':'W/SW'
+function corregirDireccionesViento(texto) {
+  // 🔹 Asegura mayúsculas exactas en direcciones compuestas
+  const direccionesMayus = [
+    "N", "S", "E", "W",
+    "NE", "SE", "NW", "SW",
+    "N/NW", "N/NE", "S/SE", "S/SW", "E/SE", "W/SW", "NW/W"
+  ];
+
+  direccionesMayus.forEach(dir => {
+    const regex = new RegExp("\\b" + dir + "\\b", "gi");
+    texto = texto.replace(regex, dir);
+  });
+
+  // 🔹 Corrige nombres de direcciones escritas completas
+  const direccionesTexto = {
+    "NORTE": "Norte",
+    "SUR": "Sur",
+    "ESTE": "Este",
+    "OESTE": "Oeste",
+    "NORESTE": "Noreste",
+    "NOROESTE": "Noroeste",
+    "SURESTE": "Sureste",
+    "SUROESTE": "Suroeste"
   };
-  for(const [clave, valor] of Object.entries(direcciones)){
-    texto = texto.replace(new RegExp('\\b'+clave+'\\b','gi'), valor);
+
+  for (const [clave, valor] of Object.entries(direccionesTexto)) {
+    const regex = new RegExp("\\b" + clave + "\\b", "gi");
+    texto = texto.replace(regex, valor);
   }
+
   return texto;
 }
 
@@ -232,12 +254,9 @@ function formatearTexto(texto){
   texto = reemplazarAbreviaturas(texto);
   texto = corregirDireccionesViento(texto);
 
-  // 🔹 NUEVO: mantiene (MAL TIEMPO) y (TEMPORAL) en mayúscula y negrita
   texto = texto.replace(/\(mal\s+tiempo\)/gi, '<span class="negrita">(MAL TIEMPO)</span>');
   texto = texto.replace(/\(temporal\)/gi, '<span class="negrita">(TEMPORAL)</span>');
-
-// 🔹 Poner EMITIDO: o EMITIDO en negrita automáticamente
-texto = texto.replace(/\bEmitido:?/gi, '<span class="negrita">Emitido:</span>');
+  texto = texto.replace(/\bEmitido:?/gi, '<span class="negrita">Emitido:</span>');
 
   const palabras = document.getElementById("palabrasMayus").value.split(',').map(p => p.trim());
   palabras.forEach(p => {
