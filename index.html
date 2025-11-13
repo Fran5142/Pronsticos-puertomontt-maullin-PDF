@@ -3,145 +3,312 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Convertidor de Informe Meteorológico</title>
+<title>Convertidor PDF</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-  body { font-family: Arial,sans-serif; background: linear-gradient(135deg, #001f3f, #013a63, #014f86); color: #000; margin:0; padding:20px;}
-  h1 { text-align:center; color:#fff; font-size:26px; text-transform:uppercase; letter-spacing:1px; margin-bottom:25px; text-shadow:0 0 8px rgba(0,0,0,0.3);}
-  
-  /* Textarea centrado y más pequeño */
-  #textoInforme { 
-    width:80%; 
-    height:200px; 
-    display:block; 
-    margin:0 auto 20px auto;
-    padding:12px; 
-    font-family:'Courier New', monospace; 
-    font-size:14px; 
-    border:2px solid #014f86; 
-    border-radius:10px; 
-    resize:none; 
-    background:#fff; 
-    color:#000; 
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
-  }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #001f3f, #013a63, #014f86);
+  color: #000;
+}
 
-  .config { width:80%; margin:0 auto 10px auto; font-size:14px; color:#fff; }
-  input { width:100%; padding:8px; margin-top:5px; border:1px solid #014f86; border-radius:8px; background:#022b42; color:#e8f1fa;}
+h1, h2 {
+  text-align: center;
+  color: #fff;
+  font-size: 26px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+  text-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
 
-  /* Botones generales */
-  button { margin:10px 5px; padding:12px 20px; font-weight:bold; border:none; border-radius:8px; cursor:pointer; font-size:15px; transition: all 0.25s ease-in-out; box-shadow:0 3px 6px rgba(0,0,0,0.3);}
-  button:hover { transform:translateY(-2px); }
+#textoInforme {
+  width: 80%;
+  height: 200px;
+  margin: 0 auto 20px auto;
+  padding: 12px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  border: 2px solid #014f86;
+  border-radius: 10px;
+  background: #fff;
+  color: #000;
+  resize: none;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+  display: block;
+}
 
-  /* Colores específicos */
-  .btn-vista { background:#00b4d8; color:#001f3f;}
-  .btn-vista:hover { background:#90e0ef; }
-  
-  .btn-pdf { background:#e63946; color:#fff;} /* rojo */
-  .btn-pdf:hover { background:#ff5c66; }
-  
-  .btn-reiniciar { background:#2a9d8f; color:#fff;} /* verde */
-  .btn-reiniciar:hover { background:#52b2a5; }
+button {
+  margin: 10px 5px;
+  padding: 12px 20px;
+  font-weight: bold;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
 
-  #vistaPrevia { width:210mm; min-height:297mm; background:#fff; color:#000; margin:30px auto; padding:25mm; font-size:12pt; line-height:1.35; border:none; box-shadow:none; text-align:justify;}
-  .encabezado-principal { font-family:Arial,sans-serif; font-size:18pt; font-weight:bold; text-align:center; text-transform:uppercase; color:#000; margin-bottom:8px; }
-  .parrafo-libre { text-align:center; font-weight:bold; margin:0; padding:0; line-height:1.1; color:#000; }
-  .negrita { font-weight:bold; color:#000; }
-  .bloque-temp { display:block; margin:12px 0; font-weight:bold; text-transform:uppercase; line-height:1.1; color:#000; text-align:justify; }
-  .bloque-editable-bajo { font-weight:bold; text-align:left; margin-top:25px; margin-bottom:-35px; outline:1px dashed #999; padding:6px; background:#fff; color:#000; text-transform:none; display:block; width:100%; border-radius:6px; box-sizing:border-box; }
-  .bloque-editable-bajo:focus { outline:2px solid #00b4d8; background:#f1f1f1;}
-  .dia-semana { display:block; text-align:center; font-family:Arial,sans-serif; font-weight:bold; text-decoration:underline; font-size:14pt; margin:22px 0 6px 0; color:#000; line-height:1.1;}
-  .bloque-seccion { margin:6px 0 12px 0; line-height:1.25; text-align:justify; color:#000;}
-  .titulo-seccion { font-weight:bold; display:block; margin-bottom:3px; font-size:13pt; color:#000;}
+button:hover { transform: translateY(-2px); }
+
+.btn-vista { background: #00b4d8; color: #001f3f; }
+.btn-vista:hover { background: #90e0ef; }
+
+.btn-pdf { background: #e63946; color: #fff; }
+.btn-pdf:hover { background: #ff5c66; }
+
+.btn-reiniciar { background: #2a9d8f; color: #fff; }
+.btn-reiniciar:hover { background: #52b2a5; }
+
+#vistaPrevia {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  color: #000;
+  margin: 30px auto;
+  padding: 20mm 40mm 40mm 40mm;
+  font-family: Arial, sans-serif;
+  font-size: 12pt;
+  line-height: 1.35;
+  text-align: justify;
+}
+
+.encabezado-principal {
+  font-size: 18pt;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: -10px;
+  margin-bottom: 4px;
+  color: #000;
+}
+
+.parrafo-libre {
+  text-align: center;
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  line-height: 1.1;
+  color: #000;
+}
+
+.negrita {
+  font-weight: bold;
+  color: #000;
+}
+
+.bloque-temp {
+  display: block;
+  margin: 12px 0;
+  font-weight: bold;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: #000;
+  text-align: justify;
+}
+
+.bloque-editable-bajo {
+  font-weight: bold;
+  text-align: left;
+  margin-top: 25px;
+  margin-bottom: -25px;
+  margin-left: -6px;
+  outline: 1px dashed #999;
+  padding: 6px;
+  background: #fff;
+  color: #000;
+  display: block;
+  width: 95%;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+.bloque-editable-bajo:focus { outline: 2px solid #00b4d8; background: #f1f1f1; }
+
+.dia-semana { display: block; text-align: center; font-weight: bold; text-decoration: underline; font-size: 14pt; margin: 22px 0 6px 0; color: #000; line-height: 1.1; }
+.bloque-seccion { margin: 6px 0 12px 0; line-height: 1.25; text-align: justify; color: #000; }
+.titulo-seccion { font-weight: bold; display: block; margin-bottom: 3px; font-size: 13pt; color: #000; text-decoration: underline; }
+
+footer { text-align: center; color: #e0e0e0; font-size: 13px; margin-top: 40px; letter-spacing: 0.5px; opacity: 0.85; }
+footer span { font-weight: bold; color: #90e0ef; font-size: 16px; }
+
+.config input#nombrePDF {
+  width: 250px;
+  padding: 12px 16px;
+  font-size: 14pt;
+  font-weight: 500;
+  border: 2px solid #f0c987;
+  border-radius: 12px;
+  outline: none;
+  background: #fff8e7;
+  color: #4a4a4a;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  transition: all 0.3s ease-in-out;
+}
+
+.config input#nombrePDF:focus {
+  border-color: #f7b733;
+  background: #fff3d6;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12); 
+}
+
+.config.oculta { display: none; }
 </style>
 </head>
+
 <body>
+
 <h1>Convertidor de Informe Meteorológico a PDF</h1>
+<h2>(Puerto Montt y Maullín)</h2>
 
 <textarea id="textoInforme" placeholder="Pega aquí tu informe meteorológico en mayúsculas..."></textarea>
 
-<div class="config">
-<label>Palabras que deben mantenerse SIEMPRE en mayúsculas (separadas por comas):</label>
-<input type="text" id="palabrasMayus" value="MET008FF, MET106MD, N, S, E, W, NE, SE, NW, SW, N/NW, N/NE, S/SE, S/SW, E/SE, W/SW, PM, AM">
+<!-- Configuración oculta -->
+<div class="config oculta">
+  <label>Palabras que deben mantenerse SIEMPRE en mayúsculas (separadas por comas):</label>
+  <input type="text" id="palabrasMayus" value="MET008FF, MET106MD, N, S, E, W, NE, SE, NW, SW, N/NW, N/NE, S/SE, S/SW, E/SE, W/SW, PM, AM">
 </div>
 
-<div class="config">
-<label>Nombre sugerido para PDF:</label>
-<input type="text" id="nombrePDF" placeholder="Ej: Informe_Meteorologico">
+<div class="config" style="text-align:center; margin-bottom:20px;">
+  <label style="font-weight:bold; font-size:14pt; color:#fff;">Nombre sugerido para PDF:</label><br>
+  <input type="text" id="nombrePDF" placeholder="Ej: Informe_Meteorologico">
 </div>
 
 <div style="text-align:center;">
-<button class="btn-vista" onclick="generarVista()">🔍 Ver vista previa</button>
-<button class="btn-pdf" onclick="generarPDF()">📄 Generar PDF</button>
-<button class="btn-reiniciar" onclick="reiniciar()">🔄 Reiniciar</button>
+  <button class="btn-vista" onclick="generarVista()">🔍 Ver vista previa</button>
+  <button class="btn-pdf" onclick="generarPDF()">📄 Generar PDF</button>
+  <button class="btn-reiniciar" onclick="reiniciar()">🔄 Reiniciar</button>
 </div>
 
 <div id="vistaPrevia"></div>
 
+<footer>
+  Creado por <span>Cabo 2º (Met.) Francisco Salas Muñoz</span>
+</footer>
+
 <script>
+function capitalizarFrase(str){
+  str = str.toLowerCase().replace(/(^|[.!?\n]\s*)([a-záéíóúñ])/g, (m,sep,letra)=>sep+letra.toUpperCase());
+  str = str.replace(/\bAm\b/g,'AM');
+  str = str.replace(/\bPm\b/g,'PM');
+  return str;
+}
+
+function reemplazarAbreviaturas(texto){
+  texto = texto.replace(/\bVIS\b/gi,'visibilidad');
+  texto = texto.replace(/\bVTO\b/gi,'viento');
+  texto = texto.replace(/\bCALMA\b/gi,'Calma'); 
+  texto = texto.replace(/\bGOLFO CORONADOS\b/gi,'Golfo Coronados');
+  texto = texto.replace(/\bPM\b/gi,'PM');
+  texto = texto.replace(/\bAM\b/gi,'AM');
+
+  texto=texto.replace(/\bCENTRO\b/gi,'Centro');
+  texto=texto.replace(/\bMETEOROLOGICO\b/gi,'Meteorológico');
+  texto=texto.replace(/\bMARITIMO\b/gi,'Marítimo');
+  texto=texto.replace(/\bPUERTO\b/gi,'Puerto');
+  texto=texto.replace(/\bMONTT\b/gi,'Montt');
+  return texto;
+}
+
 function corregirDireccionesViento(texto){
-  const direcciones={'SURWESTE':'Surweste','SURESTE':'Sureste','NORWESTE':'Norweste','NORESTE':'Noreste','NORTE':'Norte','SUR':'Sur','WESTE':'Weste','ESTE':'Este'};
-  for(const [clave,valor] of Object.entries(direcciones)){texto=texto.replace(new RegExp('\\b'+clave+'\\b','gi'),valor);}
+  const direcciones = {
+    'NORTE':'Norte','SUR':'Sur','ESTE':'Este','WESTE':'Weste',
+    'NORESTE':'Noreste','NOROESTE':'Noroeste','SURESTE':'Sureste','SURWESTE':'Surweste',
+    'NE':'NE','NW':'NW','SE':'SE','SW':'SW','N/NW':'N/NW','N/NE':'N/NE','S/SE':'S/SE','S/SW':'S/SW','E/SE':'E/SE','W/SW':'W/SW'
+  };
+  for(const [clave, valor] of Object.entries(direcciones)){
+    texto = texto.replace(new RegExp('\\b'+clave+'\\b','gi'), valor);
+  }
   return texto;
 }
-function reemplazarAbreviaturas(texto){texto=texto.replace(/\bVIS\b/gi,'visibilidad');texto=texto.replace(/\bVTO\b/gi,'viento');texto=texto.replace(/\bCALMA\b/gi,'Calma');return texto;}
-function capitalizarTexto(str){return str.toLowerCase().replace(/(^|[\s])([a-záéíóúñ])/g,(m,sep,letra)=>sep+letra.toUpperCase());}
-function formatearTexto(texto,listaMayus){
-  const lineasEspeciales=texto.match(/.*(TEMPERATURA\s+MINIMA\s+PROBABLE|TEMPERATURA\s+MAXIMA\s+PROBABLE|INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA|MET\d+).*/gim)||[];
-  texto=texto.toLowerCase();
-  texto=texto.replace(/(^|[.!?\n]\s*)([a-záéíóúñ])/g,(m,sep,letra)=>sep+letra.toUpperCase());
-  lineasEspeciales.forEach(linea=>{const original=linea.toUpperCase();texto=texto.replace(new RegExp(linea.trim().toLowerCase().replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"g"),original);});
-  texto=corregirDireccionesViento(texto);
-  texto=reemplazarAbreviaturas(texto);
-  listaMayus.forEach(palabra=>{const palabraTrim=palabra.trim();const regex=new RegExp("\\b"+palabraTrim+"\\b","gi");if(palabraTrim.toUpperCase().startsWith("MET")){texto=texto.replace(regex,`<span class="negrita">${palabraTrim.toUpperCase()}</span>`);}else{texto=texto.replace(regex,palabraTrim.toUpperCase());}});
-  const frasesNegrita=["MAL TIEMPO","TEMPORAL"];
-  frasesNegrita.forEach(frase=>{const regex=new RegExp(`\\(?\\b${frase}\\b\\)?`,"gi");texto=texto.replace(regex,match=>`<span class="negrita">${match.toUpperCase()}</span>`);});
+
+function formatearTexto(texto){
+  texto = capitalizarFrase(texto);
+  texto = reemplazarAbreviaturas(texto);
+  texto = corregirDireccionesViento(texto);
+
+  // 🔹 NUEVO: mantiene (MAL TIEMPO) y (TEMPORAL) en mayúscula y negrita
+  texto = texto.replace(/\(mal\s+tiempo\)/gi, '<span class="negrita">(MAL TIEMPO)</span>');
+  texto = texto.replace(/\(temporal\)/gi, '<span class="negrita">(TEMPORAL)</span>');
+
+// 🔹 Poner EMITIDO: o EMITIDO en negrita automáticamente
+texto = texto.replace(/\bEmitido:?/gi, '<span class="negrita">Emitido:</span>');
+
+  const palabras = document.getElementById("palabrasMayus").value.split(',').map(p => p.trim());
+  palabras.forEach(p => {
+    if(p.startsWith("MET")) {
+      const regex = new RegExp('\\b' + p + '\\b','gi');
+      texto = texto.replace(regex, `<br><span class="negrita">${p}</span>`);
+    }
+  });
+
+  texto = texto.replace(/\bPRONOSTICO VALIDO DESDE:?[^\n]*HORA LOCAL\.?/gi, 
+    `<div class="bloque-editable-bajo" contenteditable="true">(pega aquí tu texto especial)</div>`);
+
+  texto = texto.replace(/(TEMPERATURA\s+MINIMA\s+PROBABLE\s*:\s*[0-9]+°[cC])/gi, 
+      (match) => `<br><span class="negrita">TEMPERATURAMINIMAPROBABLE:${match.split(':')[1].toUpperCase()}</span>`);
+
+  texto = texto.replace(/(TEMPERATURA\s+MAXIMA\s+PROBABLE\s*:\s*[0-9]+°[cC])/gi, 
+      (match) => `<span class="negrita">TEMPERATURAMAXIMAPROBABLE:${match.split(':')[1].toUpperCase()}</span>`);
+
+  texto = texto.replace(/(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA\s*:\s*[0-9\-]+.*)/gi, 
+      (match) => `<span class="negrita">INDICEDERADIACIONULTRAVIOLETA:${match.split(':')[1].toUpperCase()}</span>`);
+
   return texto;
 }
+
 function aplicarFormatoHTML(texto){
-  let html=texto;
-  html=html.replace(/\b(Lunes|Martes|Miércoles|Miercoles|Jueves|Viernes|Sábado|Sabado|Domingo)\s+\d{1,2}(\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre))?\.?/gi,
-    match=>{const formateado=capitalizarTexto(match.replace(/\./g,"").trim());return `<div class="dia-semana"><b><u>${formateado}</u></b></div>`;});
-  html=html.replace(/(TEMPERATURA\s+MINIMA\s+PROBABLE\s*:[^\n.]*\.\s*)(TEMPERATURA\s+MAXIMA\s+PROBABLE\s*:[^\n.]*\.\s*)(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA\s*:[^\n]*)?/gi,
-    (match,tmin,tmax,indice)=>{let bloque=`<div class="bloque-temp">${tmin.trim()}<br>${tmax.trim()}`;if(indice) bloque+=`<br>${indice.trim()}<div class="bloque-editable-bajo" contenteditable="true">(pega aquí tu texto en negrita)</div>`;return bloque+"</div>";});
-  html=html.replace(/\bSITUACION SINOPTICA:?[\s\n]*/gi,'<div class="bloque-seccion"><span class="titulo-seccion">Situación Sinóptica:</span>');
-  html=html.replace(/\bPRONOSTICO VALIDO DESDE:?[\s\n]*/gi,'</div><div class="bloque-seccion"><span class="titulo-seccion">Pronóstico válido desde:</span><div class="bloque-editable-bajo" contenteditable="true">(pega aquí tu texto en negrita)</div>');
-  html=html.replace(/\bPRONOSTICO:?[\s\n]*/gi,'</div><div class="bloque-seccion"><span class="titulo-seccion">Pronóstico:</span>');
-  html+='</div>';html=html.replace(/\n{2,}/g,'\n');html=html.replace(/\n/g,'<br>');return html;
+  let html = texto;
+  html = html.replace(/\b(Lunes|Martes|Miércoles|Miercoles|Jueves|Viernes|Sábado|Sabado|Domingo)\s+\d{1,2}(\s+de\s+\w+)?\.?/gi,
+    match => `<div class="dia-semana"><b><u>${capitalizarFrase(match.replace(/\./g,"").trim())}</u></b></div>`);
+
+  html = html.replace(/\bSITUACION SINOPTICA:?[\s\n]*/gi,'<div class="bloque-seccion"><span class="titulo-seccion">Situación Sinóptica:</span>');
+  html = html.replace(/\bPRONOSTICO:?[\s\n]*/gi,'</div><div class="bloque-seccion"><span class="titulo-seccion">Pronóstico:</span>');
+
+  html += '</div>';
+  html = html.replace(/\n{2,}/g,'\n');
+  html = html.replace(/\n/g,'<br>');
+  return html;
 }
+
 function generarVista(){
-  let texto=document.getElementById("textoInforme").value.trim();
-  const listaMayus=document.getElementById("palabrasMayus").value.split(",");
-  if(!texto){alert("Por favor, pega el texto del informe meteorológico."); return;}
-  const lineas=texto.split("\n");
-  const primerasDos=lineas.slice(0,2).map(l=>`<div class="encabezado-principal">${l}</div>`).join("");
-  const libres=lineas.slice(2,5).map(l=>`<div class="parrafo-libre">${l}</div>`).join("");
-  const resto=lineas.slice(5).join("\n");
-  const textoProcesado=formatearTexto(resto,listaMayus);
-  const htmlFormateado=aplicarFormatoHTML(textoProcesado);
-  document.getElementById("vistaPrevia").innerHTML=`${primerasDos}${libres}<br>${htmlFormateado}`;
+  const texto = document.getElementById("textoInforme").value.trim();
+  if(!texto){ alert("Por favor, pega el texto del informe meteorológico."); return; }
+
+  const lineas = texto.split("\n");
+  const encabezado = lineas.slice(0,2).map(l => `<div class="encabezado-principal">${l}</div>`).join("");
+  const libres = lineas.slice(2,5).map(l => `<div class="parrafo-libre">${l}</div>`).join("");
+  const resto = lineas.slice(5).join("\n");
+
+  const textoProcesado = formatearTexto(resto);
+  const htmlFormateado = aplicarFormatoHTML(textoProcesado);
+
+  document.getElementById("vistaPrevia").innerHTML = `${encabezado}${libres}<br>${htmlFormateado}`;
 }
+
 async function generarPDF(){
   const { jsPDF } = window.jspdf;
-  const vista=document.getElementById("vistaPrevia");
-  const canvas=await html2canvas(vista,{scale:2, backgroundColor:"#ffffff"});
-  const imgData=canvas.toDataURL("image/png");
-  const pdf=new jsPDF("p","mm","letter");
-  const pageWidth=216;
-  const imgWidth=210;
-  const imgHeight=(canvas.height*imgWidth)/canvas.width;
-  const nombreArchivo=document.getElementById("nombrePDF").value.trim() || "Informe_Meteorologico";
+  const vista = document.getElementById("vistaPrevia");
+  const canvas = await html2canvas(vista,{scale:2, backgroundColor:"#ffffff"});
+  const imgData = canvas.toDataURL("image/png");
+  const pdf = new jsPDF("p","mm","letter");
+  const pageWidth = 216;
+  const imgWidth = 210;
+  const imgHeight = (canvas.height*imgWidth)/canvas.width;
+  const nombreArchivo = document.getElementById("nombrePDF").value.trim() || "Informe_Meteorologico";
   pdf.addImage(imgData,"PNG",(pageWidth-imgWidth)/2,10,imgWidth,imgHeight);
   pdf.save(nombreArchivo+".pdf");
 }
+
 function reiniciar(){
-  document.getElementById("textoInforme").value="";
-  document.getElementById("vistaPrevia").innerHTML="";
-  document.getElementById("palabrasMayus").value="MET008FF, MET106MD, N, S, E, W, NE, SE, NW, SW, N/NW, N/NE, S/SE, S/SW, E/SE, W/SW, PM, AM";
-  document.getElementById("nombrePDF").value="";
+  document.getElementById("textoInforme").value = "";
+  document.getElementById("vistaPrevia").innerHTML = "";
+  document.getElementById("nombrePDF").value = "";
 }
 </script>
 </body>
