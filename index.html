@@ -55,7 +55,7 @@ button {
   box-shadow: 0 3px 6px rgba(0,0,0,0.3);
 }
 
-button:hover { transform: translateY(-2px); }
+button:hover { transform: translateY(-2 px); }
 
 .btn-vista { background: #00b4d8; color: #001f3f; }
 .btn-vista:hover { background: #90e0ef; }
@@ -72,7 +72,7 @@ button:hover { transform: translateY(-2px); }
   background: #fff;
   color: #000;
   margin: 30px auto;
-  padding: 20mm 40mm 40mm 40mm;
+  padding: 20mm 20mm 30mm 20mm;
   font-family: Arial, sans-serif;
   font-size: 12pt;
   line-height: 1.35;
@@ -117,10 +117,10 @@ button:hover { transform: translateY(-2px); }
   font-weight: bold;
   text-align: left;
   margin-top: 25px;
-  margin-bottom: -25px;
-  margin-left: -6px;
+  margin-bottom: -23px;
+  margin-left: -1px;
   outline: 1px dashed #999;
-  padding: 6px;
+  padding: 0px;
   background: #fff;
   color: #000;
   display: block;
@@ -158,6 +158,12 @@ footer span { font-weight: bold; color: #90e0ef; font-size: 16px; }
 }
 
 .config.oculta { display: none; }
+
+/* ✔️ AGREGADO POR TU SOLICITUD: espacio extra bajo MET… */
+#emitido {
+  margin-top: 10px;
+}
+
 </style>
 </head>
 
@@ -207,17 +213,10 @@ function reemplazarAbreviaturas(texto){
   texto = texto.replace(/\bPM\b/gi,'PM');
   texto = texto.replace(/\bAM\b/gi,'AM');
 
-
-  texto=texto.replace(/\bCENTRO\b/gi,'Centro');
-  texto=texto.replace(/\bMETEOROLOGICO\b/gi,'Meteorológico');
-  texto=texto.replace(/\bMARITIMO\b/gi,'Marítimo');
-  texto=texto.replace(/\bPUERTO\b/gi,'Puerto');
-  texto=texto.replace(/\bMONTT\b/gi,'Montt');
   return texto;
 }
 
 function corregirDireccionesViento(texto) {
-  // 🔹 Asegura mayúsculas exactas en direcciones compuestas
   const direccionesMayus = [
     "N", "S", "E", "W",
     "NE", "SE", "NW", "SW",
@@ -229,16 +228,15 @@ function corregirDireccionesViento(texto) {
     texto = texto.replace(regex, dir);
   });
 
-  // 🔹 Corrige nombres de direcciones escritas completas
   const direccionesTexto = {
     "NORTE": "Norte",
     "SUR": "Sur",
     "ESTE": "Este",
-    "OESTE": "Oeste",
+    "WESTE": "Weste",
     "NORESTE": "Noreste",
-    "NOROESTE": "Noroeste",
+    "NORWESTE": "Norweste",
     "SURESTE": "Sureste",
-    "SUROESTE": "Suroeste"
+    "SURWESTE": "Surweste"
   };
 
   for (const [clave, valor] of Object.entries(direccionesTexto)) {
@@ -256,7 +254,15 @@ function formatearTexto(texto){
 
   texto = texto.replace(/\(mal\s+tiempo\)/gi, '<span class="negrita">(MAL TIEMPO)</span>');
   texto = texto.replace(/\(temporal\)/gi, '<span class="negrita">(TEMPORAL)</span>');
-  texto = texto.replace(/\bEmitido:?/gi, '<span class="negrita">Emitido:</span>');
+
+  // ✔️ EMITIDO:  → negrita + todo lo demás en mayúsculas + espacio inferior
+  texto = texto.replace(
+    /\bEMITIDO:\s*([^\n]+)/gi,
+    (match, resto) => {
+      let limpio = resto.trim().toUpperCase();
+      return `<div id="emitido"><span class="negrita">EMITIDO:</span> ${limpio}</div>`;
+    }
+  );
 
   const palabras = document.getElementById("palabrasMayus").value.split(',').map(p => p.trim());
   palabras.forEach(p => {
@@ -300,14 +306,24 @@ function generarVista(){
   if(!texto){ alert("Por favor, pega el texto del informe meteorológico."); return; }
 
   const lineas = texto.split("\n");
-  const encabezado = lineas.slice(0,2).map(l => `<div class="encabezado-principal">${l}</div>`).join("");
-  const libres = lineas.slice(2,5).map(l => `<div class="parrafo-libre">${l}</div>`).join("");
+const encabezado = lineas.slice(0,2)
+  .map(l => `<div class="encabezado-principal">${l}</div>`)
+  .join("");
+
+// 🔹 ESPACIO AUTOMÁTICO ENTRE LÍNEA 2 Y 3
+const espacioEntre2y3 = `<div style="height:18px;"></div>`;
+
+const libres = lineas.slice(2,5)
+  .map(l => `<div class="parrafo-libre">${l}</div>`)
+  .join("");
   const resto = lineas.slice(5).join("\n");
 
   const textoProcesado = formatearTexto(resto);
   const htmlFormateado = aplicarFormatoHTML(textoProcesado);
 
-  document.getElementById("vistaPrevia").innerHTML = `${encabezado}${libres}<br>${htmlFormateado}`;
+document.getElementById("vistaPrevia").innerHTML =
+  `${encabezado}${espacioEntre2y3}${libres}<br>${htmlFormateado}`;
+
 }
 
 async function generarPDF(){
