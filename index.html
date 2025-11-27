@@ -164,6 +164,22 @@ footer span { font-weight: bold; color: #90e0ef; font-size: 16px; }
   margin-top: 10px;
 }
 
+.linea-prog {
+  display: grid;
+  grid-template-columns: 320px auto;
+  column-gap: 10px;
+  margin-bottom: 4px;
+}
+
+.linea-prog .etiqueta {
+  font-weight: bold;
+}
+
+.linea-prog .valor {
+  font-weight: bold;
+}
+
+
 </style>
 </head>
 
@@ -275,14 +291,37 @@ function formatearTexto(texto){
   texto = texto.replace(/\bPRONOSTICO VALIDO DESDE:?[^\n]*HORA LOCAL\.?/gi, 
     `<div class="bloque-editable-bajo" contenteditable="true">(pega aquí tu texto especial)</div>`);
 
-  texto = texto.replace(/(TEMPERATURA\s+MINIMA\s+PROBABLE\s*:\s*[0-9]+°[cC])/gi, 
-      (match) => `<br><span class="negrita">TEMPERATURAMINIMAPROBABLE:${match.split(':')[1].toUpperCase()}</span>`);
+// ➜ AJUSTA AQUÍ LOS ESPACIOS QUE QUIERAS PARA CADA LÍNEA
+const espacioMin = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";   // para MÍNIMA
+const espacioMax = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";   // para MÁXIMA
+const espacioUV  = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";   // para UV
 
-  texto = texto.replace(/(TEMPERATURA\s+MAXIMA\s+PROBABLE\s*:\s*[0-9]+°[cC])/gi, 
-      (match) => `<span class="negrita">TEMPERATURAMAXIMAPROBABLE:${match.split(':')[1].toUpperCase()}</span>`);
+// --- FORMATO FINAL TODO MAYÚSCULA + NEGRITA + 1 ESPACIO DESPUÉS DEL ":"
+function bloqueNegrita(etiqueta, valor, espacios) {
+  return `<b>${etiqueta.toUpperCase()}${espacios}: ${valor.toUpperCase()}</b>`;
+}
 
-  texto = texto.replace(/(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA\s*:\s*[0-9\-]+.*)/gi, 
-      (match) => `<span class="negrita">INDICEDERADIACIONULTRAVIOLETA:${match.split(':')[1].toUpperCase()}</span>`);
+// TEMPERATURA MÍNIMA
+texto = texto.replace(
+  /\n?\s*(TEMPERATURA\s+MINIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
+  (m, etiqueta, valor) => "<br><br>" + bloqueNegrita(etiqueta, valor, espacioMin)
+);
+
+// TEMPERATURA MÁXIMA
+texto = texto.replace(
+  /\n?\s*(TEMPERATURA\s+MAXIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
+  (m, etiqueta, valor) => "<br>" + bloqueNegrita(etiqueta, valor, espacioMax)
+);
+
+// UV
+texto = texto.replace(
+  /\n?\s*(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA)\s*:\s*([0-9]+\s*-\s*[0-9]+.*)/gi,
+  (m, etiqueta, valor) => "<br>" + bloqueNegrita(etiqueta, valor, espacioUV)
+);
+
+
+
+
 
   return texto;
 }
