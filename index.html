@@ -313,12 +313,13 @@ texto = texto.replace(
   (m, etiqueta, valor) => "<br>" + bloqueNegrita(etiqueta, valor, espacioMax)
 );
 
-// UV
+// UV — FORMATEADO EXACTO COMO LO PEDISTE
 texto = texto.replace(
-  /\n?\s*(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA)\s*:\s*([0-9]+\s*-\s*[0-9]+.*)/gi,
-  (m, etiqueta, valor) => "<br>" + bloqueNegrita(etiqueta, valor, espacioUV)
+  /\n?\s*(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA)\s*:\s*([0-9+]+(?:\s*[–\-]\s*[0-9+]+)?\s*[A-ZÁÉÍÓÚÑ]+(?:\s[A-ZÁÉÍÓÚÑ]+)*\s*\(FUENTE\s+DMC\)\.?)/gi,
+  (m, etiqueta, valor) => {
+    return "<br><b>" + etiqueta.toUpperCase() + espacioUV + ": " + valor.toUpperCase() + "</b>";
+  }
 );
-
 
 
 
