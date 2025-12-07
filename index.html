@@ -159,7 +159,6 @@ footer span { font-weight: bold; color: #90e0ef; font-size: 16px; }
 
 .config.oculta { display: none; }
 
-/* ✔️ AGREGADO POR TU SOLICITUD: espacio extra bajo MET… */
 #emitido {
   margin-top: 10px;
 }
@@ -178,8 +177,6 @@ footer span { font-weight: bold; color: #90e0ef; font-size: 16px; }
 .linea-prog .valor {
   font-weight: bold;
 }
-
-
 </style>
 </head>
 
@@ -190,7 +187,6 @@ footer span { font-weight: bold; color: #90e0ef; font-size: 16px; }
 
 <textarea id="textoInforme" placeholder="Pega aquí tu informe meteorológico en mayúsculas..."></textarea>
 
-<!-- Configuración oculta -->
 <div class="config oculta">
   <label>Palabras que deben mantenerse SIEMPRE en mayúsculas (separadas por comas):</label>
   <input type="text" id="palabrasMayus" value="MET008FF, MET106MD, N, S, E, W, NE, SE, NW, SW, N/NW, N/NE, S/SE, S/SW, E/SE, W/SW, NW/W, PM, AM">
@@ -214,6 +210,7 @@ footer span { font-weight: bold; color: #90e0ef; font-size: 16px; }
 </footer>
 
 <script>
+// --- FUNCIONES EXISTENTES ---
 function capitalizarFrase(str){
   str = str.toLowerCase().replace(/(^|[.!?\n]\s*)([a-záéíóúñ])/g, (m,sep,letra)=>sep+letra.toUpperCase());
   str = str.replace(/\bAm\b/g,'AM');
@@ -228,7 +225,6 @@ function reemplazarAbreviaturas(texto){
   texto = texto.replace(/\bGOLFO CORONADOS\b/gi,'Golfo Coronados');
   texto = texto.replace(/\bPM\b/gi,'PM');
   texto = texto.replace(/\bAM\b/gi,'AM');
-
   return texto;
 }
 
@@ -238,12 +234,10 @@ function corregirDireccionesViento(texto) {
     "NE", "SE", "NW", "SW",
     "N/NW", "N/NE", "S/SE", "S/SW", "E/SE", "W/SW", "NW/W"
   ];
-
   direccionesMayus.forEach(dir => {
     const regex = new RegExp("\\b" + dir + "\\b", "gi");
     texto = texto.replace(regex, dir);
   });
-
   const direccionesTexto = {
     "NORTE": "Norte",
     "SUR": "Sur",
@@ -254,12 +248,10 @@ function corregirDireccionesViento(texto) {
     "SURESTE": "Sureste",
     "SURWESTE": "Surweste"
   };
-
   for (const [clave, valor] of Object.entries(direccionesTexto)) {
     const regex = new RegExp("\\b" + clave + "\\b", "gi");
     texto = texto.replace(regex, valor);
   }
-
   return texto;
 }
 
@@ -271,7 +263,6 @@ function formatearTexto(texto){
   texto = texto.replace(/\(mal\s+tiempo\)/gi, '<span class="negrita">(MAL TIEMPO)</span>');
   texto = texto.replace(/\(temporal\)/gi, '<span class="negrita">(TEMPORAL)</span>');
 
-  // ✔️ EMITIDO:  → negrita + todo lo demás en mayúsculas + espacio inferior
   texto = texto.replace(
     /\bEMITIDO:\s*([^\n]+)/gi,
     (match, resto) => {
@@ -291,38 +282,30 @@ function formatearTexto(texto){
   texto = texto.replace(/\bPRONOSTICO VALIDO DESDE:?[^\n]*HORA LOCAL\.?/gi, 
     `<div class="bloque-editable-bajo" contenteditable="true">(pega aquí tu texto especial)</div>`);
 
-// ➜ AJUSTA AQUÍ LOS ESPACIOS QUE QUIERAS PARA CADA LÍNEA
-const espacioMin = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";   // para MÍNIMA
-const espacioMax = "&#8201;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"; // para MÁXIMA
-const espacioUV  = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";   // para UV
+  const espacioMin = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+  const espacioMax = "&#8201;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+  const espacioUV  = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
-// --- FORMATO FINAL TODO MAYÚSCULA + NEGRITA + 1 ESPACIO DESPUÉS DEL ":"
-function bloqueNegrita(etiqueta, valor, espacios) {
-  return `<b>${etiqueta.toUpperCase()}${espacios}: ${valor.toUpperCase()}</b>`;
-}
-
-// TEMPERATURA MÍNIMA
-texto = texto.replace(
-  /\n?\s*(TEMPERATURA\s+MINIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
-  (m, etiqueta, valor) => "<br><br>" + bloqueNegrita(etiqueta, valor, espacioMin)
-);
-
-// TEMPERATURA MÁXIMA
-texto = texto.replace(
-  /\n?\s*(TEMPERATURA\s+MAXIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
-  (m, etiqueta, valor) => "<br>" + bloqueNegrita(etiqueta, valor, espacioMax)
-);
-
-// UV — FORMATEADO EXACTO COMO LO PEDISTE
-texto = texto.replace(
-  /\n?\s*(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA)\s*:\s*([0-9+]+(?:\s*[–\-]\s*[0-9+]+)?\s*[A-ZÁÉÍÓÚÑ]+(?:\s[A-ZÁÉÍÓÚÑ]+)*\s*\(FUENTE\s+DMC\)\.?)/gi,
-  (m, etiqueta, valor) => {
-    return "<br><b>" + etiqueta.toUpperCase() + espacioUV + ": " + valor.toUpperCase() + "</b>";
+  function bloqueNegrita(etiqueta, valor, espacios) {
+    return `<b>${etiqueta.toUpperCase()}${espacios}: ${valor.toUpperCase()}</b>`;
   }
-);
 
+  texto = texto.replace(
+    /\n?\s*(TEMPERATURA\s+MINIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
+    (m, etiqueta, valor) => "<br><br>" + bloqueNegrita(etiqueta, valor, espacioMin)
+  );
 
+  texto = texto.replace(
+    /\n?\s*(TEMPERATURA\s+MAXIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
+    (m, etiqueta, valor) => "<br>" + bloqueNegrita(etiqueta, valor, espacioMax)
+  );
 
+  texto = texto.replace(
+    /\n?\s*(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA)\s*:\s*([0-9+]+(?:\s*[–\-]\s*[0-9+]+)?\s*[A-ZÁÉÍÓÚÑ]+(?:\s[A-ZÁÉÍÓÚÑ]+)*\s*\(FUENTE\s+DMC\)\.?)/gi,
+    (m, etiqueta, valor) => {
+      return "<br><b>" + etiqueta.toUpperCase() + espacioUV + ": " + valor.toUpperCase() + "</b>";
+    }
+  );
 
   return texto;
 }
@@ -331,10 +314,8 @@ function aplicarFormatoHTML(texto){
   let html = texto;
   html = html.replace(/\b(Lunes|Martes|Miércoles|Miercoles|Jueves|Viernes|Sábado|Sabado|Domingo)\s+\d{1,2}(\s+de\s+\w+)?\.?/gi,
     match => `<div class="dia-semana"><b><u>${capitalizarFrase(match.replace(/\./g,"").trim())}</u></b></div>`);
-
   html = html.replace(/\bSITUACION SINOPTICA:?[\s\n]*/gi,'<div class="bloque-seccion"><span class="titulo-seccion">Situación Sinóptica:</span>');
   html = html.replace(/\bPRONOSTICO:?[\s\n]*/gi,'</div><div class="bloque-seccion"><span class="titulo-seccion">Pronóstico:</span>');
-
   html += '</div>';
   html = html.replace(/\n{2,}/g,'\n');
   html = html.replace(/\n/g,'<br>');
@@ -346,37 +327,47 @@ function generarVista(){
   if(!texto){ alert("Por favor, pega el texto del informe meteorológico."); return; }
 
   const lineas = texto.split("\n");
-const encabezado = lineas.slice(0,2)
-  .map(l => `<div class="encabezado-principal">${l}</div>`)
-  .join("");
+  const encabezado = lineas.slice(0,2)
+    .map(l => `<div class="encabezado-principal">${l}</div>`)
+    .join("");
 
-// 🔹 ESPACIO AUTOMÁTICO ENTRE LÍNEA 2 Y 3
-const espacioEntre2y3 = `<div style="height:18px;"></div>`;
+  const espacioEntre2y3 = `<div style="height:18px;"></div>`;
 
-const libres = lineas.slice(2,5)
-  .map(l => `<div class="parrafo-libre">${l}</div>`)
-  .join("");
+  const libres = lineas.slice(2,5)
+    .map(l => `<div class="parrafo-libre">${l}</div>`)
+    .join("");
   const resto = lineas.slice(5).join("\n");
 
   const textoProcesado = formatearTexto(resto);
   const htmlFormateado = aplicarFormatoHTML(textoProcesado);
 
-document.getElementById("vistaPrevia").innerHTML =
-  `${encabezado}${espacioEntre2y3}${libres}<br>${htmlFormateado}`;
-
+  document.getElementById("vistaPrevia").innerHTML =
+    `${encabezado}${espacioEntre2y3}${libres}<br>${htmlFormateado}`;
 }
 
+// --- FUNCIÓN MODIFICADA PARA PDF MÁS LIVIANO ---
 async function generarPDF(){
   const { jsPDF } = window.jspdf;
   const vista = document.getElementById("vistaPrevia");
+
+  // Reducir escala y fondo blanco
   const canvas = await html2canvas(vista,{scale:2, backgroundColor:"#ffffff"});
-  const imgData = canvas.toDataURL("image/png");
+
+  // Convertir a JPEG con compresión 70%
+  const imgData = canvas.toDataURL("image/jpeg", 0.7);
+
   const pdf = new jsPDF("p","mm","letter");
   const pageWidth = 216;
   const imgWidth = 210;
-  const imgHeight = (canvas.height*imgWidth)/canvas.width;
+  let imgHeight = (canvas.height*imgWidth)/canvas.width;
+  let position = 10;
+
+  if(imgHeight > 280){ 
+    imgHeight = 280; 
+  }
+
   const nombreArchivo = document.getElementById("nombrePDF").value.trim() || "Informe_Meteorologico";
-  pdf.addImage(imgData,"PNG",(pageWidth-imgWidth)/2,10,imgWidth,imgHeight);
+  pdf.addImage(imgData,"JPEG",(pageWidth-imgWidth)/2,position,imgWidth,imgHeight);
   pdf.save(nombreArchivo+".pdf");
 }
 
