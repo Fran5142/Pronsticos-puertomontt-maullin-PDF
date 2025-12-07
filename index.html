@@ -351,7 +351,7 @@ async function generarPDF(){
   const vista = document.getElementById("vistaPrevia");
 
   // Reducir escala y fondo blanco
-  const canvas = await html2canvas(vista,{scale:2, backgroundColor:"#ffffff"});
+  const canvas = await html2canvas(vista,{scale:3, backgroundColor:"#ffffff"});
 
   // Convertir a JPEG con compresión 70%
   const imgData = canvas.toDataURL("image/jpeg", 0.7);
@@ -379,3 +379,4 @@ function reiniciar(){
 </script>
 </body>
 </html>
+
