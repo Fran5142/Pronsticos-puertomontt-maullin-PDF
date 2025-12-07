@@ -327,9 +327,9 @@ function generarVista(){
   if(!texto){ alert("Por favor, pega el texto del informe meteorológico."); return; }
 
   const lineas = texto.split("\n");
-  const encabezado = lineas.slice(0,2)
-    .map(l => `<div class="encabezado-principal">${l}</div>`)
-    .join("");
+const encabezado = `<div class="encabezado-principal" style="margin-bottom:15px;">${lineas[0]}</div>` +
+                   `<div class="encabezado-principal">${lineas[1]}</div>`;
+
 
   const espacioEntre2y3 = `<div style="height:18px;"></div>`;
 
