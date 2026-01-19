@@ -226,9 +226,30 @@ function reemplazarAbreviaturas(texto){
   texto = texto.replace(/\bPM\b/gi,'PM');
   texto = texto.replace(/\bAM\b/gi,'AM');
   texto = texto.replace(/\bANTICICLONICO\b/gi,'anticiclónico');
-   texto = texto.replace(/\bBAHIA\b/gi,'bahía');
+  texto = texto.replace(/\bBAHIA\b/gi,'bahía');
+
+
+
   return texto;
 }
+
+function corregirTildesContexto(texto) {
+
+  // 1️⃣ ANTICICLÓNICO al inicio de frase
+  texto = texto.replace(
+    /(^|[.!?\n]\s*)(ANTICICLONICO)\b/gi,
+    (m, inicio) => `${inicio}Anticiclónico`
+  );
+
+  // 2️⃣ anticiclónico dentro de la frase
+  texto = texto.replace(
+    /\bANTICICLONICO\b/gi,
+    "anticiclónico"
+  );
+
+  return texto;
+}
+
 
 function corregirDireccionesViento(texto) {
   const direccionesMayus = [
@@ -261,6 +282,7 @@ function formatearTexto(texto){
   texto = capitalizarFrase(texto);
   texto = reemplazarAbreviaturas(texto);
   texto = corregirDireccionesViento(texto);
+  texto = corregirTildesContexto(texto); // 👈 AQUÍ
 
   texto = texto.replace(/\(mal\s+tiempo\)/gi, '<span class="negrita">(MAL TIEMPO)</span>');
   texto = texto.replace(/\(temporal\)/gi, '<span class="negrita">(TEMPORAL)</span>');
@@ -353,7 +375,7 @@ async function generarPDF(){
   const vista = document.getElementById("vistaPrevia");
 
   // Reducir escala y fondo blanco
-  const canvas = await html2canvas(vista,{scale:3, backgroundColor:"#ffffff"});
+  const canvas = await html2canvas(vista,{scale:2, backgroundColor:"#ffffff"});
 
   // Convertir a JPEG con compresión 70%
   const imgData = canvas.toDataURL("image/jpeg", 0.7);
@@ -381,6 +403,3 @@ function reiniciar(){
 </script>
 </body>
 </html>
-
-
-
