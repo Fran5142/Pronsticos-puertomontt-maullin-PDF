@@ -225,15 +225,12 @@ function reemplazarAbreviaturas(texto){
   texto = texto.replace(/\bGOLFO CORONADOS\b/gi,'Golfo Coronados');
   texto = texto.replace(/\bPM\b/gi,'PM');
   texto = texto.replace(/\bAM\b/gi,'AM');
+
   texto = texto.replace(/\bMETEOROLOGICO\b/gi,'METEOROLÓGICO');
   texto = texto.replace(/\bMARITIMO\b/gi,'MARÍTIMO');
 
-  
   texto = texto.replace(/\bBAHIA\b/gi,'bahía');
   texto = texto.replace(/\bMIERCOLES\b/gi,'Miércoles');
-  texto = texto.replace(/\bSABADO\b/gi,'Sábado');
-
-
 
   return texto;
 }
@@ -246,10 +243,22 @@ function corregirTildesContexto(texto) {
     (m, inicio) => `${inicio}Anticiclónico`
   );
 
+  // 1️⃣ CIRCULACIÓN CICLÓNICA al inicio de frase
+  texto = texto.replace(
+    /(^|[.!?\n]\s*)(CIRCULACION CICLONICA)\b/gi,
+    (m, inicio) => `${inicio}Circulación ciclónica`
+  );
+
   // 2️⃣ anticiclónico dentro de la frase
   texto = texto.replace(
     /\bANTICICLONICO\b/gi,
     "anticiclónico"
+  );
+
+  // 2️⃣ anticiclónico dentro de la frase
+  texto = texto.replace(
+    /\CIRCULACION CICLONICA\b/gi,
+    "circulación ciclónica"
   );
 
   return texto;
@@ -408,8 +417,3 @@ function reiniciar(){
 </script>
 </body>
 </html>
-
-
-
-
-
