@@ -329,24 +329,32 @@ function formatearTexto(texto){
     return `<b>${etiqueta.toUpperCase()}${espacios}: ${valor.toUpperCase()}</b>`;
   }
 
-  texto = texto.replace(
-    /\n?\s*(TEMPERATURA\s+MINIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
-    (m, etiqueta, valor) => "<br><br>" + bloqueNegrita(etiqueta, valor, espacioMin)
-  );
+texto = texto.replace(
+  /\n?\s*(TEMPERATURA\s+MINIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
+  (m, etiqueta, valor) => {
+    etiqueta = etiqueta.replace(/MINIMA/gi, "MÍNIMA");
+    return "<br><br>" + bloqueNegrita(etiqueta, valor, espacioMin);
+  }
+);
 
-  texto = texto.replace(
-    /\n?\s*(TEMPERATURA\s+MAXIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
-    (m, etiqueta, valor) => "<br>" + bloqueNegrita(etiqueta, valor, espacioMax)
-  );
+texto = texto.replace(
+  /\n?\s*(TEMPERATURA\s+MAXIMA\s+PROBABLE)\s*:\s*([0-9]+°[cC])/gi,
+  (m, etiqueta, valor) => {
+    etiqueta = etiqueta.replace(/MAXIMA/gi, "MÁXIMA");
+    return "<br>" + bloqueNegrita(etiqueta, valor, espacioMax);
+  }
+);
 
-  texto = texto.replace(
-    /\n?\s*(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA)\s*:\s*([0-9+]+(?:\s*[–\-]\s*[0-9+]+)?\s*[A-ZÁÉÍÓÚÑ]+(?:\s[A-ZÁÉÍÓÚÑ]+)*\s*\(FUENTE\s+DMC\)\.?)/gi,
-    (m, etiqueta, valor) => {
-      return "<br><b>" + etiqueta.toUpperCase() + espacioUV + ": " + valor.toUpperCase() + "</b>";
-    }
-  );
+texto = texto.replace(
+  /\n?\s*(INDICE\s+DE\s+RADIACION\s+ULTRAVIOLETA)\s*:\s*([0-9+]+(?:\s*[–\-]\s*[0-9+]+)?\s*[A-ZÁÉÍÓÚÑ]+(?:\s+[A-ZÁÉÍÓÚÑ]+)*\s*\(FUENTE\s+DMC\)\.?)/gi,
+  (m, etiqueta, valor) => {
+    etiqueta = etiqueta.replace(/RADIACION/gi, "RADIACIÓN");
+    return "<br><b>" + etiqueta.toUpperCase() + espacioUV + ": " + valor.toUpperCase() + "</b>";
+  }
+);
 
-  return texto;
+return texto;
+
 }
 
 function aplicarFormatoHTML(texto){
